@@ -25,11 +25,10 @@ ticker = input("Which stock would you like to analyze? (input: CAPITALIZED TICKE
 
 # COLLECTING BARSET DATA
 barset = bd.alpaca.get_barset(ticker, '1D', limit=30)
-barset2 = barset[ticker]
 
-high = barset2[0].h
-low = barset2[0].l
-for candle in barset2:
+high = barset[ticker][0].h
+low = barset[ticker][0].l
+for candle in barset[ticker]:
     if candle.h > high:
         high = candle.h
     elif candle.l < low:
@@ -44,4 +43,4 @@ tsla = bd.alpaca.alpha_vantage.historic_quotes('TSLA', adjusted=True, output_for
 
 # use account.x to retrieve certain account information
 #print(tsla)
-#print(barset['AAPL'][0].c)
+
