@@ -1,8 +1,10 @@
 from src.SETUP import tradeapi, ALPACA_API_KEY, ALPACA_SECRET_KEY, ENDPOINT_URL
+from src.strategies.mean_reversion import AllocationStrategy, SmaCross
 from tkinter import *
 import backtrader as bt
 import datetime as dt
-import matplotlib
+import mplfinance as mpf
+
 import yfinance as yf
 
 # instantiate REST API
@@ -29,6 +31,7 @@ class PaperBot:
         # self.conn = tradeapi.stream2.StreamConn(ALPACA_API_KEY, ALPACA_SECRET_KEY, ENDPOINT_URL)
         self.stonks = []
         self.cerebro = bt.Cerebro()
+        self.cerebro.broker.set_cash(100000000)
 
         self.root = Tk()
         # INIT GUI
@@ -60,13 +63,22 @@ class PaperBot:
     def runbacktest(self):
         # two ways to get data alpha vantage + alpaca barset
         for ticker in self.stonks:
-            i = bt.feeds.YahooFinance(dataname=ticker, fromdate=start, todate=end)
-            # i = yf.Ticker(ticker)
-            # i = i.history(start=start, end=end)
-            # print(i.head())
-            self.cerebro.adddata(i)
+            # i = bt.feeds.YahooFinance(dataname=ticker, fromdate=start, todate=end) # 'YahooFinance' object has no attribute 'setenvrioment'
+            i = yf.Ticker(ticker)
+            i = i.history(start=start, end=end).drop(columns=['Dividends', 'Stock Splits'])
+            mpf.plot(i, type='candle')
+            i.to_csv('%s.csv' % ticker)
+            data = bt.feeds.YahooFinanceCSVData(dataname='%s.csv' % ticker)
+            self.cerebro.adddata(data, name=ticker)
+
+
+
+        self.cerebro.addstrategy(SmaCross)
+        print("Starting Portfolio Value: %.2f" % self.cerebro.broker.getvalue())
         self.cerebro.run()
+        print("Final Portfolio Value: %.2f" % self.cerebro.broker.getvalue())
         self.cerebro.plot()
+
 
 
 bd = PaperBot()
