@@ -4,6 +4,8 @@ from tkinter import *
 import backtrader as bt
 import datetime as dt
 import mplfinance as mpf
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import yfinance as yf
 
@@ -52,7 +54,6 @@ class PaperBot:
             self.alpaca.get_asset(self.input.get())
             self.stonks.append(self.input.get())
         except:
-            print("not a valid asset / DNE")
             self.text.set("NOT A VALID TICKER SYMBOL")
         else:
             self.text.set("Current List: " + ", ".join(self.stonks))
@@ -66,19 +67,29 @@ class PaperBot:
             # i = bt.feeds.YahooFinance(dataname=ticker, fromdate=start, todate=end) # 'YahooFinance' object has no attribute 'setenvrioment'
             i = yf.Ticker(ticker)
             i = i.history(start=start, end=end).drop(columns=['Dividends', 'Stock Splits'])
-            mpf.plot(i, type='candle')
+            # mpf.plot(i, type='candle')
+            self.text.set("Rendering backtest results...")
             i.to_csv('%s.csv' % ticker)
-            data = bt.feeds.YahooFinanceCSVData(dataname='%s.csv' % ticker)
+            data = bt.feeds.GenericCSVData(dataname='%s.csv' % ticker,
+                                           dtformat=('%Y-%m-%d'),
+                                           datetime=0,
+                                           open=1,
+                                           high=2,
+                                           low=3,
+                                           close=4,
+                                           volume=5,
+                                           openinterest=-1,
+                                           timeframe=bt.TimeFrame.Days)
             self.cerebro.adddata(data, name=ticker)
-
-
-
-        self.cerebro.addstrategy(SmaCross)
+        self.cerebro.addstrategy(AllocationStrategy)
         print("Starting Portfolio Value: %.2f" % self.cerebro.broker.getvalue())
         self.cerebro.run()
         print("Final Portfolio Value: %.2f" % self.cerebro.broker.getvalue())
+        self.text.set("Close Module to view plots")
         self.cerebro.plot()
 
+    def addcharts(self):
+        figure = plt.plot(figsize=(6, 5), dpi=100)
 
 
 bd = PaperBot()
