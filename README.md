@@ -1,7 +1,3 @@
 # CalypsoAlgotrader
 
-Calypso is the second rendition of the algotrading projects: By building a bot that runs indefinitly, I aim to host the script on Google Cloud and view performance updates on Alpaca dashboard
-
-
-Resources: 
-<li> https://algotrading101.com/learn/alpaca-trading-api-guide/ </li>
+Currently transitioning this project into a GUI interface for tracking automated trades made by another algotrader project... maybe it'll be in python but it could also be a react project i guess c:
