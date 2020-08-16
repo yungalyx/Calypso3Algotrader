@@ -63,29 +63,21 @@ class PaperBot:
 
     def runbacktest(self):
         # two ways to get data alpha vantage + alpaca barset
+        self.text.set("Rendering backtest results...")
         for ticker in self.stonks:
-            # i = bt.feeds.YahooFinance(dataname=ticker, fromdate=start, todate=end) # 'YahooFinance' object has no attribute 'setenvrioment'
-            i = yf.Ticker(ticker)
-            i = i.history(start=start, end=end).drop(columns=['Dividends', 'Stock Splits'])
+            # i = yf.Ticker(ticker)
+            # i = i.history(start=start, end=end).drop(columns=['Dividends', 'Stock Splits'])
             # mpf.plot(i, type='candle')
-            self.text.set("Rendering backtest results...")
-            i.to_csv('%s.csv' % ticker)
-            data = bt.feeds.GenericCSVData(dataname='%s.csv' % ticker,
-                                           dtformat=('%Y-%m-%d'),
-                                           datetime=0,
-                                           open=1,
-                                           high=2,
-                                           low=3,
-                                           close=4,
-                                           volume=5,
-                                           openinterest=-1,
-                                           timeframe=bt.TimeFrame.Days)
+            # i.to_csv('%s.csv' % ticker)
+            data = bt.feeds.YahooFinanceData(dataname=ticker,
+                                             fromdate=start,
+                                             todate=end)
             self.cerebro.adddata(data, name=ticker)
-        self.cerebro.addstrategy(AllocationStrategy)
+
+        self.cerebro.addstrategy(SmaCross)
         print("Starting Portfolio Value: %.2f" % self.cerebro.broker.getvalue())
         self.cerebro.run()
         print("Final Portfolio Value: %.2f" % self.cerebro.broker.getvalue())
-        self.text.set("Close Module to view plots")
         self.cerebro.plot()
 
     def addcharts(self):

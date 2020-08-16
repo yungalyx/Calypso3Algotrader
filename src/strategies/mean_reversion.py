@@ -1,6 +1,5 @@
 from datetime import datetime
 import backtrader as bt
-import backtrader.indicators as btind
 import math
 
 
