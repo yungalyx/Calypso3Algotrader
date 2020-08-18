@@ -1,3 +1,5 @@
-# CalypsoAlgotrader
+# Calypso3Algotrader
 
-Currently transitioning this project into a GUI interface for tracking automated trades made by another algotrader project... maybe it'll be in python but it could also be a react project i guess c:
+Calypso3 is my second algotrader project. This one focuses on generating a simple GUI to access trading data. Built using tkinter and ALPACA. 
+
+Calypso 3 is tracking automated trades made by the luna6algotrader project.
